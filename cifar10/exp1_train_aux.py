@@ -55,7 +55,7 @@ def run_transfer(learning_rates=(0.001, 0.0001), iters=(3, 0), method='mds'):
             kernel_parameters = {'student': 'combined', 'teacher': 'combined', 'loss': 'combined'}
             prob_transfer(student_net, teacher_net, train_loader, epochs=iters, lr=lr,
                           teacher_layers=teacher_layers, student_layers=student_layers, layer_weights=weights,
-                          kernel_parameters=kernel_parameters, loss_params=loss_params)
+                          kernel_parameters=kernel_parameters, loss_params=loss_params, device=device)
         else:
             assert False
 
