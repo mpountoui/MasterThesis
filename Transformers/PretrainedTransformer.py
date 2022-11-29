@@ -1,73 +1,16 @@
-from datasets               import load_dataset
-from datasets               import load_metric
-from transformers           import ViTFeatureExtractor
-from transformers           import ViTForImageClassification
-from transformers           import TrainingArguments
-from transformers           import Trainer
-from torchvision.transforms import CenterCrop
-from torchvision.transforms import Compose
-from torchvision.transforms import Normalize
-from torchvision.transforms import RandomHorizontalFlip
-from torchvision.transforms import RandomResizedCrop
-from torchvision.transforms import Resize
-from torchvision.transforms import ToTensor
-from sklearn.metrics        import confusion_matrix
-from sklearn.metrics        import ConfusionMatrixDisplay
+from datasets                        import load_metric
+from transformers                    import ViTFeatureExtractor
+from transformers                    import ViTForImageClassification
+from transformers                    import TrainingArguments
+from transformers                    import Trainer
+from sklearn.metrics                 import confusion_matrix
+from sklearn.metrics                 import ConfusionMatrixDisplay
+from LoadDataset.HuggingFaceDatasets import GetDataset
+from LoadDataset.HuggingFaceDatasets import ImageData
 
 import matplotlib.pyplot as plt
 import numpy             as np
 import torch
-
-'----------------------------------------------------------------------------------------------------------------------'
-
-
-def TransformTrainImage(image, feature_extractor):
-    return Compose(
-            [
-                RandomResizedCrop(feature_extractor.size),
-                RandomHorizontalFlip(),
-                ToTensor(),
-                Normalize(mean=feature_extractor.image_mean, std=feature_extractor.image_std),
-            ]
-            )(image)
-
-
-'----------------------------------------------------------------------------------------------------------------------'
-
-
-def TransformValidationImage(image, feature_extractor):
-    return Compose(
-            [
-                Resize(feature_extractor.size),
-                CenterCrop(feature_extractor.size),
-                ToTensor(),
-                Normalize(mean=feature_extractor.image_mean, std=feature_extractor.image_std),
-            ]
-        )(image)
-
-
-'----------------------------------------------------------------------------------------------------------------------'
-
-
-class TransformTrainImages:
-    def __init__(self, feature_extractor):
-        self.feature_extractor = feature_extractor
-
-    def __call__(self, examples):
-        examples['pixel_values'] = [TransformTrainImage(image.convert("RGB"), self.feature_extractor) for image in examples['img']]
-        return examples
-
-
-'----------------------------------------------------------------------------------------------------------------------'
-
-
-class TransformValidationImages:
-    def __init__(self, feature_extractor):
-        self.feature_extractor = feature_extractor
-
-    def __call__(self, examples):
-        examples['pixel_values'] = [TransformValidationImage(image.convert("RGB"), self.feature_extractor) for image in examples['img']]
-        return examples
 
 
 '----------------------------------------------------------------------------------------------------------------------'
@@ -140,19 +83,12 @@ def ShowConfusionMatrix(outputs, TrainDS):
 '----------------------------------------------------------------------------------------------------------------------'
 
 
-TrainDS_Size = 5000
-TrainDS_Size = 2000
-
 if __name__ == '__main__':
     feature_extractor  = ViTFeatureExtractor.from_pretrained("google/vit-base-patch16-224-in21k")
 
-    TrainDS, TestDS    = load_dataset('../cifar10', split=['train[:500]', 'test[:200]'])
-    TrainAndValidation = TrainDS.train_test_split(test_size=0.1)
-    TrainDS            = TrainAndValidation['train']
-    ValidationDS       = TrainAndValidation['test' ]
-    TrainDS.set_transform(     TransformTrainImages(     feature_extractor))
-    ValidationDS.set_transform(TransformValidationImages(feature_extractor))
-    TestDS.set_transform(      TransformValidationImages(feature_extractor))
+    TrainDS, ValidationDS, TestDS = GetDataset('cifar10', ImageData(feature_extractor.size,
+                                                                    feature_extractor.image_mean,
+                                                                    feature_extractor.image_std))
 
     id2label           = {id: label for id, label in enumerate(TrainDS.features['label'].names)}
     label2id           = {label: id for id, label in id2label.items()}
