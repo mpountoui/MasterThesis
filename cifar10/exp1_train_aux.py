@@ -1,13 +1,3 @@
-from nn.nn_utils                import load_model, save_model
-from loaders.cifar_dataset      import cifar10_loader
-from models.cifar_tiny          import Cifar_Tiny
-from models.resnet              import ResNet18
-from nn.retrieval_evaluation    import evaluate_model_retrieval
-from nn.pkt_transfer            import prob_transfer
-from Transformers.MyTransformer import ViT
-
-import torch
-
 try:
     import google.colab
     IN_COLAB = True
@@ -20,6 +10,18 @@ if IN_COLAB :
     import sys
     sys.path.append('/content/MasterThesis')
     Path = '/content/MasterThesis'
+
+'----------------------------------------------------------------------------------------------------------------------'
+
+from nn.nn_utils                import load_model, save_model
+from loaders.cifar_dataset      import cifar10_loader
+from models.cifar_tiny          import Cifar_Tiny
+from models.resnet              import ResNet18
+from nn.retrieval_evaluation    import evaluate_model_retrieval
+from nn.pkt_transfer            import prob_transfer
+from Transformers.MyTransformer import ViT
+
+import torch
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 

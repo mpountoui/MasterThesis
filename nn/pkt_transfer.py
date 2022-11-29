@@ -4,7 +4,6 @@ import torch.optim as optim
 from tqdm import tqdm
 import numpy as np
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 def pairwise_distances(a, b=None, eps=1e-6):
     """
@@ -169,7 +168,7 @@ def prob_loss(teacher_features, student_features, eps=1e-6, kernel_parameters={}
 
 
 def prob_transfer(student, teacher, transfer_loader, epochs=1, lr=0.001, teacher_layers=(3,), student_layers=(3,),
-                  layer_weights=(1,), kernel_parameters={}, loss_params={}):
+                  layer_weights=(1,), kernel_parameters={}, loss_params={}, device="cpu"):
     params = list(student.parameters())
     optimizer = optim.Adam(params=params, lr=lr)
     qmis = []
@@ -185,8 +184,8 @@ def prob_transfer(student, teacher, transfer_loader, epochs=1, lr=0.001, teacher
             # Feed forward the network and update
             optimizer.zero_grad()
 
-            inputs.to(device)
-            targets.to(device)
+            inputs  = inputs.to(device)
+            targets = targets.to(device)
 
             teacher_feats = teacher.get_features(Variable(inputs), layers=teacher_layers)
             student_feats = student.get_features(Variable(inputs), layers=student_layers)
