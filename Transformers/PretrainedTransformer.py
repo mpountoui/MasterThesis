@@ -1,3 +1,8 @@
+import IsColabEnabled
+import matplotlib.pyplot as plt
+import numpy             as np
+import torch
+
 from datasets                        import load_metric
 from transformers                    import ViTFeatureExtractor
 from transformers                    import ViTForImageClassification
@@ -7,10 +12,6 @@ from sklearn.metrics                 import confusion_matrix
 from sklearn.metrics                 import ConfusionMatrixDisplay
 from LoadDataset.HuggingFaceDatasets import GetDataset
 from LoadDataset.HuggingFaceDatasets import ImageData
-
-import matplotlib.pyplot as plt
-import numpy             as np
-import torch
 
 
 '----------------------------------------------------------------------------------------------------------------------'

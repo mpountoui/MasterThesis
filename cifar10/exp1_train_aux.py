@@ -1,17 +1,5 @@
-try:
-    import google.colab
-    IN_COLAB = True
-except:
-    IN_COLAB = False
-
-Path = '/Users/ioannisbountouris/PycharmProjects/MasterThesis'
-
-if IN_COLAB :
-    import sys
-    sys.path.append('/content/MasterThesis')
-    Path = '/content/MasterThesis'
-
-'----------------------------------------------------------------------------------------------------------------------'
+import IsColabEnabled
+import torch
 
 from nn.nn_utils                import load_model, save_model
 from loaders.cifar_dataset      import cifar10_loader
@@ -20,8 +8,6 @@ from models.resnet              import ResNet18
 from nn.retrieval_evaluation    import evaluate_model_retrieval
 from nn.pkt_transfer            import prob_transfer
 from Transformers.MyTransformer import ViT
-
-import torch
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -33,8 +19,8 @@ def run_transfer(learning_rates=(0.001, 0.0001), iters=(3, 0), method='mds'):
     transfer_name = method
 
     # Output paths
-    output_path  = Path + '/cifar10/models/aux_'  + transfer_name + '.model'
-    results_path = Path + '/cifar10/results/aux_' + transfer_name
+    output_path  = IsColabEnabled.Path + '/cifar10/models/aux_'  + transfer_name + '.model'
+    results_path = IsColabEnabled.Path + '/cifar10/results/aux_' + transfer_name
 
     student_net = ViT((3, 32, 32), n_patches=8, n_blocks=2, hidden_d=8, n_heads=2, out_d=10).to(device)
 
