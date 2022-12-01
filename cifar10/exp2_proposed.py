@@ -1,5 +1,5 @@
 from nn.nn_utils import load_model, save_model
-from loaders.cifar_dataset import cifar10_loader
+from LoadDataset.PyTorchDataset import cifar10_loader
 from models.cifar_tiny import Cifar_Tiny
 from models.cifar_very_tiny import Cifar_Very_Tiny
 from nn.retrieval_evaluation import evaluate_model_retrieval

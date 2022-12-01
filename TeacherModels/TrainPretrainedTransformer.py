@@ -4,7 +4,7 @@ try:
 except:
     IN_COLAB = False
 
-Path = '/Users/ioannisbountouris/PycharmProjects/MasterThesis'
+Path = '/'
 
 if IN_COLAB :
     import sys
@@ -112,6 +112,7 @@ if __name__ == '__main__':
 
     ViT                = ViTForImageClassification.from_pretrained('google/vit-base-patch16-224-in21k',
                                                                    num_labels=10, id2label=id2label, label2id=label2id)
+
     trainer = CreateTrainer(ViT, ArgumentsForTraining(), TrainDS, ValidationDS, feature_extractor)
     trainer.train()
     outputs = trainer.predict(TestDS)

@@ -4,7 +4,6 @@ from time import time
 from nn.nn_utils import extract_features, extract_features_raw
 import numpy as np
 import pickle
-from loaders.cifar_dataset import cifar10_loader
 from nn.nn_utils import load_model
 
 
@@ -124,9 +123,10 @@ class Database(object):
         return results
 
 
-def retrieval_evaluation(net, train_loader, test_loader, metric='cosine', layer=-1):
+def retrieval_evaluation(net, device, train_loader, test_loader, metric='cosine', layer=-1):
     """
     Evalutes a pytorch model using a retrieval setup
+    :param device:
     :param net:
     :param train_loader:
     :param test_loader:
@@ -141,9 +141,9 @@ def retrieval_evaluation(net, train_loader, test_loader, metric='cosine', layer=
         ff_time = (time() - a) / float(len(train_labels))
         test_features, test_labels = extract_features_raw(test_loader)
     else:
-        train_features, train_labels = extract_features(net, train_loader, layer=layer)
+        train_features, train_labels = extract_features(net, device, train_loader, layer=layer)
         ff_time = (time() - a) / float(len(train_labels))
-        test_features, test_labels = extract_features(net, test_loader, layer=layer)
+        test_features, test_labels = extract_features(net, device, test_loader, layer=layer)
 
 
     # Evaluate the model
@@ -159,9 +159,10 @@ def retrieval_evaluation(net, train_loader, test_loader, metric='cosine', layer=
     return results
 
 
-def evaluate_model_retrieval(path='', net=None, result_path='', dataset_name='cifar10', dataset_loader=cifar10_loader, layer=3, metric='cosine'):
+def evaluate_model_retrieval(dataset_loader, path='', net=None, device='cpu', result_path='', dataset_name='cifar10', layer=3, metric='cosine'):
     """
     Wrapper function for the evaluation that also saves the results into the appropriate output files
+    :param device:
     :param path:
     :param net:
     :param result_path:
@@ -170,13 +171,12 @@ def evaluate_model_retrieval(path='', net=None, result_path='', dataset_name='ci
     :return:
     """
     # If a path is supplied load the model
-    net.cuda()
+    net.to(device)
     if path != '':
         load_model(net, path)
 
-
-    _, test_loader, train_loader = dataset_loader(batch_size=64)
-    results = retrieval_evaluation(net, train_loader, test_loader, layer=layer, metric=metric)
+    _, test_loader, train_loader = dataset_loader
+    results = retrieval_evaluation(net, device, train_loader, test_loader, layer=layer, metric=metric)
 
     results = {dataset_name: results}
     with open(result_path, 'wb') as f:

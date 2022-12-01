@@ -18,9 +18,9 @@ if IN_COLAB :
 import torch
 
 from nn.nn_utils                import load_model, save_model
-from loaders.cifar_dataset      import cifar10_loader
+from LoadDataset.PyTorchDataset import cifar10_loader
 from models.cifar_tiny          import Cifar_Tiny
-from models.resnet              import ResNet18
+from TeacherModels.Resnet import ResNet18
 from nn.retrieval_evaluation    import evaluate_model_retrieval
 from nn.pkt_transfer            import prob_transfer
 from Transformers.MyTransformer import ViT

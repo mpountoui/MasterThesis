@@ -1,15 +1,15 @@
 import torch.nn as nn
 import torch.optim as optim
 from nn.retrieval_evaluation import evaluate_model_retrieval
-from loaders.cifar_dataset import cifar10_loader
+from LoadDataset.PyTorchDataset import cifar10_loader
 from models.cifar_tiny import Cifar_Tiny
 from models.cifar_very_tiny import Cifar_Very_Tiny
-from models.resnet import ResNet18
+from TeacherModels.Resnet import ResNet18
 from nn.nn_utils import train_model, save_model
 
 
 def train_cifar10_model(net, learning_rates=[0.001, 0.0001], iters=[50, 50], output_path='resnet18_cifar10.model'):
-    # Load data
+    # Load Data
     train_loader, test_loader, _ = cifar10_loader(batch_size=128)
 
     # Define loss
@@ -27,7 +27,7 @@ def train_cifar_models():
     net = ResNet18()
     net.cuda()
     train_cifar10_model(net, learning_rates=[0.001, 0.0001], iters=[50, 30],
-                        output_path='models/resnet18_cifar10.model')
+                        output_path='../TeacherModels/TrainedModels/Cifar10/resnet18_cifar10.model')
 
     # Cifar Tiny
     net = Cifar_Tiny()
@@ -55,10 +55,10 @@ def evaluate_cifar_models_retrieval():
     evaluate_model_retrieval(net=Cifar_Tiny(num_classes=10), path='models/tiny_cifar10.model',
                              result_path='results/tiny_cifar10_baseline_retrieval_e.pickle', layer=3, metric='l2')
 
-    evaluate_model_retrieval(net=ResNet18(num_classes=10), path='models/resnet18_cifar10.model',
+    evaluate_model_retrieval(net=ResNet18(num_classes=10), path='../TeacherModels/TrainedModels/Cifar10/resnet18_cifar10.model',
                              result_path='results/resnet18_cifar10_baseline_retrieval.pickle', layer=3)
 
-    evaluate_model_retrieval(net=ResNet18(num_classes=10), path='models/resnet18_cifar10.model',
+    evaluate_model_retrieval(net=ResNet18(num_classes=10), path='../TeacherModels/TrainedModels/Cifar10/resnet18_cifar10.model',
                              result_path='results/resnet18_cifar10_baseline_retrieval_e.pickle', layer=3, metric='l2')
 
     evaluate_model_retrieval(net=Cifar_Very_Tiny(num_classes=10), path='models/very_tiny_cifar10.model',

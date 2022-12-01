@@ -62,9 +62,10 @@ def train_model(net, optimizer, criterion, train_loader, epochs=10, layer=-1):
         print("\nLoss, acc = ", train_loss, correct / total)
 
 
-def extract_features(net, test_loader, layer=-1):
+def extract_features(net, device, test_loader, layer=-1):
     """
     Extracts features from a neural network
+    :param device:
     :param net: a network that must implement net.get_features()
     :param test_loader:
     :return:
@@ -75,7 +76,7 @@ def extract_features(net, test_loader, layer=-1):
     labels = []
     with torch.no_grad():
         for (inputs, targets) in tqdm(test_loader):
-            inputs = inputs.cuda()
+            inputs = inputs.to(device)
             labels.append(targets.numpy())
 
             inputs = Variable(inputs)

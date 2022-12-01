@@ -216,7 +216,7 @@ def PerformTesting(model, criterion, test_loader, device):
 
 
 def main():
-    # Loading data
+    # Loading Data
     transform = ToTensor()
 
     train_set = MNIST(root='./../datasets', train=True , download=True, transform=transform)
