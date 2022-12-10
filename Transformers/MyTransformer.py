@@ -298,7 +298,7 @@ def TransformerEvaluationBasedOnPatches(train_loader, test_loader):
     AccuracyScores = []
     NumberOfPatces = [4, 8, 16]
     for n in NumberOfPatces:
-        accuracy = ModelEvaluation(NumberOfPatces=n, HiddenDimension=24, TrainLoader=train_loader, TestLoader=test_loader)
+        accuracy = ModelEvaluation(NumberOfPatches=n, HiddenDimension=24, TrainLoader=train_loader, TestLoader=test_loader)
         AccuracyScores.append(accuracy)
 
     CreatePlot(NumberOfPatces, AccuracyScores, 'Blocks=2, Hidden_d=24, Heads=2, Epochs = 1, LR = 0.001', 'Patches', 'Accuracy')
