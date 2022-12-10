@@ -260,7 +260,6 @@ def ModelEvaluation(TrainLoader, TestLoader, NumberOfBlocks, NumberOfHeads, Numb
                  out_d=10).to(device)
 
     criterion = CrossEntropyLoss()
-
     PerformTraining(model, criterion, LR, N_EPOCHS, TrainLoader, device)
     accuracy = PerformTesting(model, criterion, TestLoader, device)
 
@@ -300,28 +299,34 @@ def CreatePlot(X, Y, title, xlabel, ylabel):
 
 def TransformerEvaluationBasedOnPatches(train_loader, test_loader):
     AccuracyScores = []
-    NumberOfPatces = [4, 8, 16]
-    epochs = 10
-    lr = 0.002
-    hidden_d = 24
-    n_blocks = 2
-    n_heades = 2
-    for n in NumberOfPatces:
-        accuracy = ModelEvaluation(NumberOfBlocks=n_blocks,
-                                   NumberOfHeads=n_heades,
-                                   NumberOfPatches=n,
-                                   HiddenDimension=hidden_d,
-                                   N_EPOCHS=epochs,
-                                   LR=lr,
-                                   TrainLoader=train_loader,
-                                   TestLoader=test_loader)
-        AccuracyScores.append(accuracy)
+    NumberOfPatces = [8, 16]
+    epochs = [10]
+    lr = [0.002, 0.001]
+    hidden_d = [16, 32]
+    n_blocks = [2, 4]
+    n_heades = [2, 6]
+    for b in n_blocks:
+        for h in n_heades:
+            for d in hidden_d:
+                for e in epochs:
+                    for l in lr:
+                        for n in NumberOfPatces:
+                            accuracy = ModelEvaluation(NumberOfBlocks=b,
+                                                       NumberOfHeads=h,
+                                                       HiddenDimension=d,
+                                                       N_EPOCHS=e,
+                                                       LR=l,
+                                                       NumberOfPatches=n,
+                                                       TrainLoader=train_loader,
+                                                       TestLoader=test_loader)
+                            AccuracyScores.append(accuracy)
 
-    CreatePlot(NumberOfPatces, AccuracyScores, f'Blocks={n_blocks}, Hidden_d= {hidden_d}, Heads={n_heades}, '
-                                               f'Epochs = {epochs}, LR = {lr}', 'Patches', 'Accuracy')
+                            CreatePlot(NumberOfPatces, AccuracyScores, f'Blocks={b}, Hidden_d= {d}, Heads={h}, '
+                                                                       f''f'Epochs = {e}, LR = {l}', 'Patches', 'Accuracy')
 
 
 '----------------------------------------------------------------------------------------------------------------------'
+
 
 if __name__ == '__main__':
 
