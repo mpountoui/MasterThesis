@@ -248,13 +248,17 @@ def PerformTesting(model, criterion, test_loader, device):
 '----------------------------------------------------------------------------------------------------------------------'
 
 
-def ModelEvaluation(TrainLoader, TestLoader, NumberOfPatches, HiddenDimension):
+def ModelEvaluation(TrainLoader, TestLoader, NumberOfBlocks, NumberOfHeads, NumberOfPatches, HiddenDimension, N_EPOCHS, LR):
 
     # Defining model and training options
     print("Using device: ", device, f"({torch.cuda.get_device_name(device)})" if torch.cuda.is_available() else "")
-    model = ViT((3, 32, 32), n_patches=NumberOfPatches, n_blocks=2, hidden_d=HiddenDimension, n_heads=2, out_d=10).to(device)
-    N_EPOCHS = 10
-    LR = 0.002
+    model = ViT( (3, 32, 32),
+                 n_patches=NumberOfPatches,
+                 n_blocks=NumberOfBlocks,
+                 hidden_d=HiddenDimension,
+                 n_heads=NumberOfHeads,
+                 out_d=10).to(device)
+
     criterion = CrossEntropyLoss()
 
     PerformTraining(model, criterion, LR, N_EPOCHS, TrainLoader, device)
@@ -297,11 +301,24 @@ def CreatePlot(X, Y, title, xlabel, ylabel):
 def TransformerEvaluationBasedOnPatches(train_loader, test_loader):
     AccuracyScores = []
     NumberOfPatces = [4, 8, 16]
+    epochs = 10
+    lr = 0.002
+    hidden_d = 24
+    n_blocks = 2
+    n_heades = 2
     for n in NumberOfPatces:
-        accuracy = ModelEvaluation(NumberOfPatches=n, HiddenDimension=24, TrainLoader=train_loader, TestLoader=test_loader)
+        accuracy = ModelEvaluation(NumberOfBlocks=n_blocks,
+                                   NumberOfHeads=n_heades,
+                                   NumberOfPatches=n,
+                                   HiddenDimension=hidden_d,
+                                   N_EPOCHS=epochs,
+                                   LR=lr,
+                                   TrainLoader=train_loader,
+                                   TestLoader=test_loader)
         AccuracyScores.append(accuracy)
 
-    CreatePlot(NumberOfPatces, AccuracyScores, 'Blocks=2, Hidden_d=24, Heads=2, Epochs = 1, LR = 0.001', 'Patches', 'Accuracy')
+    CreatePlot(NumberOfPatces, AccuracyScores, f'Blocks={n_blocks}, Hidden_d= {hidden_d}, Heads={n_heades}, '
+                                               f'Epochs = {epochs}, LR = {lr}', 'Patches', 'Accuracy')
 
 
 '----------------------------------------------------------------------------------------------------------------------'
