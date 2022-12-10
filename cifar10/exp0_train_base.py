@@ -27,7 +27,7 @@ def train_cifar_models():
     net = ResNet18()
     net.cuda()
     train_cifar10_model(net, learning_rates=[0.001, 0.0001], iters=[50, 30],
-                        output_path='../TeacherModels/TrainedModels/Cifar10/resnet18_cifar10.model')
+                        output_path='../TeacherModels/ModelsTraining/Cifar10/resnet18_cifar10.model')
 
     # Cifar Tiny
     net = Cifar_Tiny()
@@ -55,10 +55,10 @@ def evaluate_cifar_models_retrieval():
     evaluate_model_retrieval(net=Cifar_Tiny(num_classes=10), path='models/tiny_cifar10.model',
                              result_path='results/tiny_cifar10_baseline_retrieval_e.pickle', layer=3, metric='l2')
 
-    evaluate_model_retrieval(net=ResNet18(num_classes=10), path='../TeacherModels/TrainedModels/Cifar10/resnet18_cifar10.model',
+    evaluate_model_retrieval(net=ResNet18(num_classes=10), path='../TeacherModels/ModelsTraining/Cifar10/resnet18_cifar10.model',
                              result_path='results/resnet18_cifar10_baseline_retrieval.pickle', layer=3)
 
-    evaluate_model_retrieval(net=ResNet18(num_classes=10), path='../TeacherModels/TrainedModels/Cifar10/resnet18_cifar10.model',
+    evaluate_model_retrieval(net=ResNet18(num_classes=10), path='../TeacherModels/ModelsTraining/Cifar10/resnet18_cifar10.model',
                              result_path='results/resnet18_cifar10_baseline_retrieval_e.pickle', layer=3, metric='l2')
 
     evaluate_model_retrieval(net=Cifar_Very_Tiny(num_classes=10), path='models/very_tiny_cifar10.model',

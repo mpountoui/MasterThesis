@@ -15,8 +15,9 @@ if IN_COLAB :
 '----------------------------------------------------------------------------------------------------------------------'
 '----------------------------------------------------------------------------------------------------------------------'
 
-import torch.nn as nn
-import numpy    as np
+import matplotlib.pyplot as plt
+import torch.nn          as nn
+import numpy             as np
 import torch
 
 from tqdm                       import tqdm
@@ -34,6 +35,9 @@ torch.manual_seed(0)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+'----------------------------------------------------------------------------------------------------------------------'
+'----------------------------------------------------------------------------------------------------------------------'
+'----------------------------------------------------------------------------------------------------------------------'
 '----------------------------------------------------------------------------------------------------------------------'
 
 
@@ -96,7 +100,7 @@ class ViTBlock(nn.Module):
 
 
 class ViT(nn.Module):
-    def __init__(self, chw, n_patches=7, n_blocks=2, hidden_d=8, n_heads=2, out_d=10):
+    def __init__(self, chw, n_patches, n_blocks, hidden_d, n_heads, out_d):
         # Super constructor
         super(ViT, self).__init__()
 
@@ -188,6 +192,10 @@ class ViT(nn.Module):
 
 
 '----------------------------------------------------------------------------------------------------------------------'
+'----------------------------------------------------------------------------------------------------------------------'
+'----------------------------------------------------------------------------------------------------------------------'
+'----------------------------------------------------------------------------------------------------------------------'
+'----------------------------------------------------------------------------------------------------------------------'
 
 
 def PerformTraining(model, criterion, LR, N_EPOCHS, train_loader, device):
@@ -230,14 +238,35 @@ def PerformTesting(model, criterion, test_loader, device):
 
             correct += torch.sum(torch.argmax(y_hat, dim=1) == y).detach().cpu().item()
             total += len(x)
+        accuracy = correct / total * 100
         print(f"Test loss: {test_loss:.2f}")
-        print(f"Test accuracy: {correct / total * 100:.2f}%")
+        print(f"Test accuracy: {accuracy:.2f}%")
+
+    return accuracy
 
 
 '----------------------------------------------------------------------------------------------------------------------'
 
 
-def main():
+def ModelEvaluation(TrainLoader, TestLoader, NumberOfPatches, HiddenDimension):
+
+    # Defining model and training options
+    print("Using device: ", device, f"({torch.cuda.get_device_name(device)})" if torch.cuda.is_available() else "")
+    model = ViT((3, 32, 32), n_patches=NumberOfPatches, n_blocks=2, hidden_d=HiddenDimension, n_heads=2, out_d=10).to(device)
+    N_EPOCHS = 10
+    LR = 0.002
+    criterion = CrossEntropyLoss()
+
+    PerformTraining(model, criterion, LR, N_EPOCHS, TrainLoader, device)
+    accuracy = PerformTesting(model, criterion, TestLoader, device)
+
+    return accuracy
+
+
+'----------------------------------------------------------------------------------------------------------------------'
+
+
+def CreateDataLoaders():
     # Loading Data
     transform = ToTensor()
 
@@ -247,19 +276,38 @@ def main():
     train_loader = DataLoader(train_set, shuffle=True , batch_size=128)
     test_loader  = DataLoader(test_set , shuffle=False, batch_size=128)
 
-    # Defining model and training options
-    print("Using device: ", device, f"({torch.cuda.get_device_name(device)})" if torch.cuda.is_available() else "")
-    model = ViT((3, 32, 32), n_patches=8, n_blocks=2, hidden_d=24, n_heads=2, out_d=10).to(device)
-    N_EPOCHS = 50
-    LR = 0.001
-    criterion = CrossEntropyLoss()
-
-    PerformTraining(model, criterion, LR, N_EPOCHS, train_loader, device)
-    PerformTesting(model, criterion, test_loader, device)
+    return train_loader, test_loader
 
 
 '----------------------------------------------------------------------------------------------------------------------'
 
 
+def CreatePlot(X, Y, title, xlabel, ylabel):
+    plt.plot(X, Y)
+    plt.title(title)
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.savefig(title  + '.png')
+    plt.show()
+
+
+'----------------------------------------------------------------------------------------------------------------------'
+
+
+def TransformerEvaluationBasedOnPatches(train_loader, test_loader):
+    AccuracyScores = []
+    NumberOfPatces = [4, 8, 16]
+    for n in NumberOfPatces:
+        accuracy = ModelEvaluation(NumberOfPatces=n, HiddenDimension=24, TrainLoader=train_loader, TestLoader=test_loader)
+        AccuracyScores.append(accuracy)
+
+    CreatePlot(NumberOfPatces, AccuracyScores, 'Blocks=2, Hidden_d=24, Heads=2, Epochs = 1, LR = 0.001', 'Patches', 'Accuracy')
+
+
+'----------------------------------------------------------------------------------------------------------------------'
+
 if __name__ == '__main__':
-    main()
+
+    train_loader, test_loader = CreateDataLoaders()
+    TransformerEvaluationBasedOnPatches(train_loader, test_loader)
+
