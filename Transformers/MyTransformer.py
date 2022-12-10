@@ -301,9 +301,9 @@ def TransformerEvaluationBasedOnPatches(train_loader, test_loader):
     NumberOfPatces = [8, 16]
     epochs = [10]
     learning_rate = [0.002, 0.001]
-    hidden_d = [16, 32]
+    hidden_d = [384, 768]
     n_blocks = [2, 4]
-    n_heads  = [2, 8]
+    n_heads  = [6, 12]
     for b in n_blocks:
         for h in n_heads:
             for d in hidden_d:
