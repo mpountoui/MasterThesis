@@ -298,7 +298,6 @@ def CreatePlot(X, Y, title, xlabel, ylabel):
 
 
 def TransformerEvaluationBasedOnPatches(train_loader, test_loader):
-    AccuracyScores = []
     NumberOfPatces = [8, 16]
     epochs = [10]
     lr = [0.002, 0.001]
@@ -310,6 +309,7 @@ def TransformerEvaluationBasedOnPatches(train_loader, test_loader):
             for d in hidden_d:
                 for e in epochs:
                     for l in lr:
+                        AccuracyScores = []
                         for n in NumberOfPatces:
                             accuracy = ModelEvaluation(NumberOfBlocks=b,
                                                        NumberOfHeads=h,
