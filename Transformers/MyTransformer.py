@@ -303,9 +303,9 @@ def TransformerEvaluationBasedOnPatches(train_loader, test_loader):
     lr = [0.002, 0.001]
     hidden_d = [16, 32]
     n_blocks = [2, 4]
-    n_heades = [2, 6]
+    n_heads  = [2, 6]
     for b in n_blocks:
-        for h in n_heades:
+        for h in n_heads:
             for d in hidden_d:
                 for e in epochs:
                     for l in lr:
@@ -321,8 +321,8 @@ def TransformerEvaluationBasedOnPatches(train_loader, test_loader):
                                                        TestLoader=test_loader)
                             AccuracyScores.append(accuracy)
 
-                            CreatePlot(NumberOfPatces, AccuracyScores, f'Blocks={b}, Hidden_d= {d}, Heads={h}, '
-                                                                       f''f'Epochs = {e}, LR = {l}', 'Patches', 'Accuracy')
+                        CreatePlot(NumberOfPatces, AccuracyScores, f'Blocks={b}, Hidden_d= {d}, Heads={h}, '
+                                                                   f'Epochs = {e}, LR = {l}', 'Patches', 'Accuracy')
 
 
 '----------------------------------------------------------------------------------------------------------------------'
