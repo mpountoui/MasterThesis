@@ -13,5 +13,5 @@ if __name__ == '__main__':
                              net=ResNet18(num_classes=10),
                              device=device,
                              path='TeacherModels/TrainedModels/Cifar10/resnet18_cifar10.model',
-                             result_path='results/resnet18_cifar10_baseline_retrieval.pickle',
+                             result_path='TeacherModels/TrainedModels/Cifar10/Results/resnet18_cifar10_baseline_retrieval.pickle',
                              layer=3)

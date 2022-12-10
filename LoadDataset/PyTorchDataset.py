@@ -1,5 +1,6 @@
+from torch.utils.data import DataLoader
+
 import LoadDataset.Tools.Tools as Tools
-import torch
 
 
 def GetDataset(dataset, batch_size=128):
@@ -18,12 +19,8 @@ def GetDataset(dataset, batch_size=128):
     train_data_original = dataset('LoadDataset/Data', train=True , transform=test_transform , download=True)
     test_data           = dataset('LoadDataset/Data', train=False, transform=test_transform , download=True)
 
-    train_loader = torch.utils.data.DataLoader(train_data, batch_size=batch_size, shuffle=True, num_workers=2,
-                                               pin_memory=True)
-    test_loader = torch.utils.data.DataLoader(test_data, batch_size=batch_size, shuffle=True, num_workers=2,
-                                              pin_memory=True)
-    train_loader_original = torch.utils.data.DataLoader(train_data_original, batch_size=batch_size,
-                                                        shuffle=True, num_workers=2, pin_memory=True)
+    train_loader          = DataLoader(train_data         , batch_size=batch_size, shuffle=True, num_workers=2, pin_memory=True)
+    test_loader           = DataLoader(test_data          , batch_size=batch_size, shuffle=True, num_workers=2, pin_memory=True)
+    train_loader_original = DataLoader(train_data_original, batch_size=batch_size, shuffle=True, num_workers=2, pin_memory=True)
 
     return train_loader, test_loader, train_loader_original
-

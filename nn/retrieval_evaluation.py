@@ -14,13 +14,13 @@ class Database(object):
         self.nn.fit(database_vectors)
         self.targets = np.cast[np.int](targets)
         bins = np.bincount(self.targets)
-        idx = np.nonzero(bins)[0]
+        idx  = np.nonzero(bins)[0]
         self.instances_per_target = dict(zip(idx, bins[idx]))
-        self.number_of_instances = float(len(targets))
-        self.recall_levels = np.arange(0, 1.01, 0.1)
+        self.number_of_instances  = float(len(targets))
+        self.recall_levels      = np.arange(0, 1.01, 0.1)
         self.fine_recall_levels = np.arange(0, 1.01, 0.05)
 
-    def get_binary_relevances(self, queries, targets):
+    def GetBinaryRelevance(self, queries, targets):
         """
         Executes the queries and returns the binary relevance vectors (one vector for each query)
         :param queries: the queries
@@ -33,6 +33,17 @@ class Database(object):
             relevant_vectors[i, :] = self.targets[indices[i, :]] == targets[i]
         return relevant_vectors
 
+    def CalculatePrecision(self, relevant_vectors):
+        precision = np.cumsum(relevant_vectors, axis=1) / np.arange(1, self.number_of_instances + 1)
+        print(f"Precision here {precision}")
+        for i in reversed(range(len(precision) - 1)):
+            print(f"1 {precision[:, i]}")
+            print(f"2 {precision[:, i+1]}")
+            precision[:, i] = np.maximum(precision[:, i], precision[:, i + 1])
+            print(f"3 {precision[:, i]}")
+            print("---------")
+        return precision
+
     def get_metrics(self, relevant_vectors, targets):
         """
         Evaluates the retrieval performance
@@ -41,11 +52,11 @@ class Database(object):
         :return:
         """
         # Calculate precisions per query
-        precision = np.cumsum(relevant_vectors, axis=1) / np.arange(1, self.number_of_instances + 1)
+        precision = self.CalculatePrecision(relevant_vectors)
 
         # Calculate interpolated precision
-        for i in reversed(range(len(precision) - 1)):
-            precision[:, i] = np.maximum(precision[:, i], precision[:, i + 1])
+        # for i in reversed(range(len(precision) - 1)):
+        #     precision[:, i] = np.maximum(precision[:, i], precision[:, i + 1])
 
         # Calculate recall per query
         instances_per_query = np.zeros((targets.shape[0], 1))
@@ -88,7 +99,7 @@ class Database(object):
             cur_queries = queries[i * batch_size:(i + 1) * batch_size]
             cur_targets = targets[i * batch_size:(i + 1) * batch_size]
 
-            relevant_vectors = self.get_binary_relevances(cur_queries, cur_targets)
+            relevant_vectors = self.GetBinaryRelevance(cur_queries, cur_targets)
             (c_m_ap, c_raw_precision, c_fine_precision, self.fine_recall_levels,) = \
                 self.get_metrics(relevant_vectors, cur_targets)
 
@@ -105,7 +116,7 @@ class Database(object):
             cur_queries = queries[batch_size * n_batches:]
             cur_targets = targets[batch_size * n_batches:]
 
-            relevant_vectors = self.get_binary_relevances(cur_queries, cur_targets)
+            relevant_vectors = self.GetBinaryRelevance(cur_queries, cur_targets)
             (c_m_ap, c_raw_precision, c_fine_precision, self.fine_recall_levels,) = \
                 self.get_metrics(relevant_vectors, cur_targets)
 
