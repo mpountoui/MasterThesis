@@ -11,7 +11,7 @@ if IN_COLAB :
     sys.path.append('/content/MasterThesis')
     Path = '/content/MasterThesis'
 
-import Tools.Tools as Tools
+import LoadDataset.Tools.Tools as Tools
 from datasets import load_dataset
 
 '----------------------------------------------------------------------------------------------------------------------'
