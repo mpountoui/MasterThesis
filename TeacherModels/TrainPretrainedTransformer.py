@@ -177,7 +177,7 @@ def PerformTraining():
 
     TrainDS, ValidationDS, TestDS = GetDataset('cifar10', Tools.ImageData(feature_extractor.size,
                                                                           feature_extractor.image_mean,
-                                                                          feature_extractor.image_std))
+                                                                          feature_extractor.image_std) )
 
     id2label           = {id: label for id, label in enumerate(TrainDS.features['label'].names)}
     label2id           = {label: id for id, label in id2label.items()}

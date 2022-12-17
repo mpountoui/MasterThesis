@@ -17,6 +17,9 @@ else:
 
 import LoadDataset.Tools.Tools as Tools
 from datasets import load_dataset
+from transformers import ViTFeatureExtractor, ViTConfig
+from torchvision.transforms import RandomResizedCrop
+
 
 '----------------------------------------------------------------------------------------------------------------------'
 
@@ -57,3 +60,24 @@ def GetDataset(dataset, image_data):
     TestDS.set_transform(      TransformTestImages( image_data))
 
     return TrainDS, ValidationDS, TestDS
+
+
+'----------------------------------------------------------------------------------------------------------------------'
+
+
+def DebugFun():
+    feature_extractor  = ViTFeatureExtractor.from_pretrained("google/vit-base-patch16-224-in21k")
+
+    TrainDS, TestDS = load_dataset('cifar10', split=['train[:500]', 'test[:100]'])
+
+    image_data = Tools.ImageData(feature_extractor.size, feature_extractor.image_mean, feature_extractor.image_std)
+
+    image = TrainDS[0]['img'].convert("RGB")
+    RandomResizedCrop(image_data.newSize)(image)
+
+
+'----------------------------------------------------------------------------------------------------------------------'
+
+
+if __name__ == '__main__':
+    DebugFun()
