@@ -35,31 +35,6 @@ torch.manual_seed(0)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-'----------------------------------------------------------------------------------------------------------------------'
-'----------------------------------------------------------------------------------------------------------------------'
-'----------------------------------------------------------------------------------------------------------------------'
-'----------------------------------------------------------------------------------------------------------------------'
-
-
-def Patchify(images, patch_size):
-    dim1    = patch_size[0]
-    dim2    = patch_size[1]
-    unfold  = nn.Unfold(kernel_size=(dim1, dim2), stride=(dim1, dim2))
-    patches = unfold(images)
-    patches = patches.permute(0, 2, 1)
-    return patches
-
-
-'----------------------------------------------------------------------------------------------------------------------'
-
-
-def PositionalEmbeddings(sequence_length, d):
-    result = torch.ones(sequence_length, d)
-    for i in range(sequence_length):
-        for j in range(d):
-            result[i][j] = np.sin(i / (10000 ** (j / d))) if j % 2 == 0 else np.cos(i / (10000 ** ((j - 1) / d)))
-    return result
-
 
 '----------------------------------------------------------------------------------------------------------------------'
 '----------------------------------------------------------------------------------------------------------------------'
@@ -124,7 +99,7 @@ class ViT(nn.Module):
         self.class_token = nn.Parameter(torch.rand(1, self.hidden_d))
 
         # 3) Positional embedding
-        self.register_buffer('positional_embeddings', PositionalEmbeddings(n_patches ** 2 + 1, hidden_d), persistent=False)
+        self.register_buffer('positional_embeddings', self.PositionalEmbeddings(n_patches ** 2 + 1, hidden_d), persistent=False)
 
         # 4) Transformer encoder blocks
         self.blocks = nn.ModuleList([ViTBlock(hidden_d, n_heads) for _ in range(n_blocks)])
@@ -137,11 +112,30 @@ class ViT(nn.Module):
 
     '------------------------------------------------------------------------------------------------------------------'
 
+    def Patchify(self, images, patch_size):
+        dim1 = patch_size[0]
+        dim2 = patch_size[1]
+        unfold = nn.Unfold(kernel_size=(dim1, dim2), stride=(dim1, dim2))
+        patches = unfold(images)
+        patches = patches.permute(0, 2, 1)
+        return patches
+
+    '------------------------------------------------------------------------------------------------------------------'
+
+    def PositionalEmbeddings(self, sequence_length, d):
+        result = torch.ones(sequence_length, d)
+        for i in range(sequence_length):
+            for j in range(d):
+                result[i][j] = np.sin(i / (10000 ** (j / d))) if j % 2 == 0 else np.cos(i / (10000 ** ((j - 1) / d)))
+        return result
+
+    '------------------------------------------------------------------------------------------------------------------'
+
     def get_hidden_state(self, images, layers=[-1]):
 
         # Dividing images into patches
         n, c, h, w = images.shape
-        patches = Patchify(images, self.patch_size).to(self.positional_embeddings.device)
+        patches = self.Patchify(images, self.patch_size).to(self.positional_embeddings.device)
 
         # Running linear layer tokenization
         # Map the vector corresponding to each patch to the hidden size dimension
@@ -248,7 +242,7 @@ def PerformTesting(model, criterion, test_loader, device):
 '----------------------------------------------------------------------------------------------------------------------'
 
 
-def ModelEvaluation(TrainLoader, TestLoader, NumberOfBlocks, NumberOfHeads, NumberOfPatches, HiddenDimension, N_EPOCHS, LR):
+def ModelTrainingAndEvaluation(TrainLoader, TestLoader, NumberOfBlocks, NumberOfHeads, NumberOfPatches, HiddenDimension, N_EPOCHS, LR):
 
     # Defining model and training options
     print("Using device: ", device, f"({torch.cuda.get_device_name(device)})" if torch.cuda.is_available() else "")
@@ -298,12 +292,12 @@ def CreatePlot(X, Y, title, xlabel, ylabel):
 
 
 def TransformerEvaluationBasedOnPatches(train_loader, test_loader):
-    NumberOfPatces = [8, 16]
-    epochs = [10]
-    learning_rate = [0.002, 0.001]
-    hidden_d = [384, 768]
-    n_blocks = [2, 4]
-    n_heads  = [6, 12]
+    NumberOfPatces = [8]
+    epochs = [200]
+    learning_rate = [0.001]
+    hidden_d = [384]
+    n_blocks = [7]
+    n_heads  = [12]
     for b in n_blocks:
         for h in n_heads:
             for d in hidden_d:
@@ -311,14 +305,14 @@ def TransformerEvaluationBasedOnPatches(train_loader, test_loader):
                     for lr in learning_rate:
                         AccuracyScores = []
                         for n in NumberOfPatces:
-                            accuracy = ModelEvaluation(NumberOfBlocks=b,
-                                                       NumberOfHeads=h,
-                                                       HiddenDimension=d,
-                                                       N_EPOCHS=e,
-                                                       LR=lr,
-                                                       NumberOfPatches=n,
-                                                       TrainLoader=train_loader,
-                                                       TestLoader=test_loader)
+                            accuracy = ModelTrainingAndEvaluation(NumberOfBlocks=b,
+                                                                  NumberOfHeads=h,
+                                                                  HiddenDimension=d,
+                                                                  N_EPOCHS=e,
+                                                                  LR=lr,
+                                                                  NumberOfPatches=n,
+                                                                  TrainLoader=train_loader,
+                                                                  TestLoader=test_loader)
                             AccuracyScores.append(accuracy)
 
                         CreatePlot(NumberOfPatces, AccuracyScores, f'Blocks={b}, Hidden_d= {d}, Heads={h}, '

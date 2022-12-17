@@ -1,6 +1,5 @@
-import Tools
+import Tools.Tools as Tools
 from datasets import load_dataset
-
 
 '----------------------------------------------------------------------------------------------------------------------'
 
@@ -31,7 +30,7 @@ class TransformTestImages:
 
 def GetDataset(dataset, image_data):
 
-    TrainDS, TestDS      = load_dataset(dataset, split=['train[:500]', 'test[:200]'])
+    TrainDS, TestDS      = load_dataset(dataset, split=['train[:500]', 'test[:100]'])
     TrainAndValidationDS = TrainDS.train_test_split(test_size=0.1)
     TrainDS              = TrainAndValidationDS['train']
     ValidationDS         = TrainAndValidationDS['test' ]

@@ -10,6 +10,10 @@ if IN_COLAB :
     import sys
     sys.path.append('/content/MasterThesis')
     Path = '/content/MasterThesis'
+else:
+    import sys
+    sys.path.append('/Users/ioannisbountouris/PycharmProjects/MasterThesis')
+    sys.path.append('/Users/ioannisbountouris/PycharmProjects/MasterThesis/nn')
 
 '----------------------------------------------------------------------------------------------------------------------'
 '----------------------------------------------------------------------------------------------------------------------'
@@ -17,13 +21,15 @@ if IN_COLAB :
 
 import torch
 
-from nn.nn_utils                import load_model, save_model
-from LoadDataset.PyTorchDataset import cifar10_loader
-from models.cifar_tiny          import Cifar_Tiny
-from TeacherModels.Resnet import ResNet18
-from nn.retrieval_evaluation    import evaluate_model_retrieval
-from nn.pkt_transfer            import prob_transfer
-from Transformers.MyTransformer import ViT
+from nn.nn_utils                 import load_model, save_model
+from models.cifar_tiny           import Cifar_Tiny
+from TeacherModels.Resnet.Resnet import ResNet18
+from nn.retrieval_evaluation     import evaluate_model_retrieval
+from nn.pkt_transfer             import prob_transfer
+from Transformers.MyTransformer  import ViT
+from LoadDataset.PyTorchDataset  import GetDataset
+from torchvision.datasets.cifar  import CIFAR10
+from TeacherModels.TrainPretrainedTransformer import MyViTForImageClassification
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -40,11 +46,20 @@ def run_transfer(learning_rates=(0.001, 0.0001), iters=(3, 0), method='mds'):
 
     student_net = ViT((3, 32, 32), n_patches=8, n_blocks=2, hidden_d=8, n_heads=2, out_d=10).to(device)
 
-    # Load the teacher model
-    teacher_net = ResNet18(num_classes=10)
-    load_model(teacher_net, Path + '/cifar10/models/resnet18_cifar10.model')
+    # # Load a pre-trained teacher network
+    # student_net = Cifar_Tiny(10)
+    #
+    # # Use a pre-trained model
+    # load_model(student_net, 'models/tiny_cifar10.model')
+    #
+    # # Load the teacher model
+    # teacher_net = ResNet18(num_classes=10)
+    # load_model(teacher_net, 'models/resnet18_cifar10.model')
 
-    train_loader, test_loader, train_loader_raw = cifar10_loader(batch_size=128)
+    teacher_net = torch.load(Path + '/TeacherModels/TrainedModels/Cifar10/ViT_Teacher_cifar10.pth')
+    teacher_net.eval()
+
+    train_loader, test_loader, train_loader_raw = GetDataset(CIFAR10, batch_size=128)
 
     student_net.to(device)
     teacher_net.to(device)

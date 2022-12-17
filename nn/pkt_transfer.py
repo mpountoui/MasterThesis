@@ -190,6 +190,9 @@ def prob_transfer(student, teacher, transfer_loader, epochs=1, lr=0.001, teacher
             teacher_feats = teacher.get_features(Variable(inputs), layers=teacher_layers)
             student_feats = student.get_features(Variable(inputs), layers=student_layers)
 
+            print(f"shape teacher {teacher_feats[0].shape}")
+            print(f"shape student {student_feats[0].shape}")
+
             loss = 0
             for i, (teacher_f, student_f, weight) in enumerate(zip(teacher_feats, student_feats, layer_weights)):
                 if i == 0:
