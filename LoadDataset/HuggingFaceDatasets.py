@@ -9,7 +9,11 @@ Path = '/Users/ioannisbountouris/PycharmProjects/MasterThesis'
 if IN_COLAB :
     import sys
     sys.path.append('/content/MasterThesis')
+    sys.path.append('/content/MasterThesis/LoadDataset/Tools')
     Path = '/content/MasterThesis'
+else:
+    import sys
+    sys.path.append('/Users/ioannisbountouris/PycharmProjects/MasterThesis/LoadDataset/Tools')
 
 import LoadDataset.Tools.Tools as Tools
 from datasets import load_dataset
