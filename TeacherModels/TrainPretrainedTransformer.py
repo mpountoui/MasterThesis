@@ -1,4 +1,3 @@
-import PIL
 try:
     import google.colab
     IN_COLAB = True
