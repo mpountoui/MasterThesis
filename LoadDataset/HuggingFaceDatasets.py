@@ -13,6 +13,7 @@ if IN_COLAB :
     Path = '/content/MasterThesis'
 else:
     import sys
+    sys.path.append('/Users/ioannisbountouris/PycharmProjects/MasterThesis/LoadDataset')
     sys.path.append('/Users/ioannisbountouris/PycharmProjects/MasterThesis/LoadDataset/Tools')
 
 import LoadDataset.Tools.Tools as Tools
