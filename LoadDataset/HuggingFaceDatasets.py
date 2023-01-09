@@ -67,15 +67,10 @@ def GetDataset(dataset, image_data):
 
 def DebugFun():
     feature_extractor  = ViTFeatureExtractor.from_pretrained("google/vit-base-patch16-224-in21k")
-    print(feature_extractor)
-
     TrainDS, TestDS = load_dataset('cifar10', split=['train[:500]', 'test[:100]'])
-
     image_data = Tools.ImageData(feature_extractor.size, feature_extractor.image_mean, feature_extractor.image_std)
-
-    print(image_data.newSize)
     image = TrainDS[0]['img'].convert("RGB")
-    RandomResizedCrop(image_data.newSize)(image)
+    RandomResizedCrop(size=(image_data.newSize['height'], image_data.newSize['width']))(image)
 
 
 '----------------------------------------------------------------------------------------------------------------------'

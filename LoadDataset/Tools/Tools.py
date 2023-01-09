@@ -34,7 +34,7 @@ class ImageData:
 
 def TrainImageTransformer(image_data):
     return Compose([
-                RandomResizedCrop(image_data.newSize),
+                RandomResizedCrop(size=(image_data.newSize['height'], image_data.newSize['width'])),
                 RandomHorizontalFlip(),
                 ToTensor(),
                 Normalize(mean=image_data.imageMean, std=image_data.imageStd),
@@ -46,8 +46,8 @@ def TrainImageTransformer(image_data):
 
 def TestImageTransformer(image_data):
     return Compose([
-                Resize(image_data.newSize),
-                CenterCrop(image_data.newSize),
+                Resize(size=(image_data.newSize['height'], image_data.newSize['width'])),
+                CenterCrop(size=(image_data.newSize['height'], image_data.newSize['width'])),
                 ToTensor(),
                 Normalize(mean=image_data.imageMean, std=image_data.imageStd),
             ])
