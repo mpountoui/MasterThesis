@@ -57,6 +57,7 @@ def run_transfer(learning_rates=(0.001, 0.0001), iters=(3, 0), method='mds'):
     student_net = ViT((3, 32, 32), n_patches=8, n_blocks=2, hidden_d=8, n_heads=2, out_d=10).to(device)
 
     teacher_net = torch.load(Path + '/TeacherModels/TrainedModels/Cifar10/ViT_Teacher_cifar10.pth')
+    teacher_net.to(device)
     teacher_net.eval()
 
     train_loader, test_loader, train_loader_raw = GetDataset(CIFAR10, batch_size=128)

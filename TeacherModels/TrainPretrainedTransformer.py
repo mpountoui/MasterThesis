@@ -138,6 +138,9 @@ class MyViTForImageClassification(ViTForImageClassification):
         train_features = [Tools.TestImageTransformer(image_data)(image.convert("RGB")) for image in images]
         train_features = torch.stack(train_features)
 
+        if next(self.parameters()).is_cuda:
+            train_features = train_features.to('cuda')
+
         train_features = {'pixel_values': train_features}
 
         with torch.no_grad():
